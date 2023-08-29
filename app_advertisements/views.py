@@ -1,13 +1,17 @@
 from django.shortcuts import render, redirect
 from .models import Advertisements
 from .forms import AdvertisementForm
+from django.contrib.auth.decorators import login_required
 
-from django.urls import reverse
+
+from django.urls import reverse, reverse_lazy
 
 def index(request):
     advertisements = Advertisements.objects.all()
     context = {'advertisements': advertisements}
-    return render(request, 'index.html', context)
+    return render(request, 'app_advertisements/index.html', context)
+
+@login_required(login_url=reverse_lazy('login'))
 
 def advertisement_post(request):
     if request.method == "POST":
@@ -21,13 +25,17 @@ def advertisement_post(request):
     else:
         form = AdvertisementForm()
     context  = {'form': form}
-    return render(request, 'advertisement-post.html', context)
+    return render(request, 'app_advertisements/advertisement-post.html', context)
 
-    form = AdvertisementForm()
-    context = {'form': form}
-    return render(request, 'advertisement-post.html', context)
 
 def top_sellers(request):
-    return render(request, 'top-sellers.html')
+    return render(request, 'app_advertisements/top-sellers.html')
+
+def advertisement_detail(request, pk):
+    advertisement = Advertisements.objects.get(id=pk)
+    context = {
+        'advertisement': advertisement
+    }
+    return render(request, 'app_advertisements/advertisement.html', context)
 
 # Create your views here.
